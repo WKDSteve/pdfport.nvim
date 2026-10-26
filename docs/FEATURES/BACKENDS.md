@@ -75,7 +75,7 @@ request per page is not a safe "all"). When `pdfinfo` reports more pages, the
 result is `status = "partial"` with a message saying so, and it is not cached.
 `tesseract` behaves the same way.
 
-The HTTP call goes through [ai.nvim](https://github.com/StefanBartl/ai.nvim)'s
+The HTTP call goes through [ai.nvim](https://github.com/WKDSteve/ai.nvim)'s
 `ask()` — the page image travels as an `Ai.Attachment`, and `ollama_host`
 rides along as a per-request `host` override, so the option keeps working
 without anything being written into the environment.
@@ -90,7 +90,7 @@ Sends the PDF whole, as a base64 `document` attachment, to the Anthropic
 Messages API (`model` default `claude-opus-4-5`) and reads Markdown back —
 no rasterization, the model reads the PDF itself.
 
-The request goes through [ai.nvim](https://github.com/StefanBartl/ai.nvim)'s
+The request goes through [ai.nvim](https://github.com/WKDSteve/ai.nvim)'s
 `ask()`. The API key still never reaches curl's argv (it goes through curl's
 `-K` stdin config path, so it never appears in `ps`/Process-Explorer output),
 and `opts.claude_api_key` rides along as a per-request `api_key` override
@@ -110,7 +110,7 @@ fraction of the cost and latency; override it per call for a document that
 needs the stronger model.
 
 Gemini and Anthropic are the only two providers
-[ai.nvim](https://github.com/StefanBartl/ai.nvim) can send a *document* to at
+[ai.nvim](https://github.com/WKDSteve/ai.nvim) can send a *document* to at
 all (`capabilities.documents`). That is what makes this backend a hundred
 lines instead of a second copy of the ollama backend's page-by-page
 rasterizing loop — and it is also the reason an OpenAI backend is a roadmap
@@ -141,7 +141,7 @@ PDFs where the text-layer backends return nothing useful.
 
 `claude`, `gemini` and `ollama` are the only extraction backends that talk to
 an HTTP API, and they do it through
-[ai.nvim](https://github.com/StefanBartl/ai.nvim) rather than each carrying
+[ai.nvim](https://github.com/WKDSteve/ai.nvim) rather than each carrying
 its own curl call, JSON body builder and base64 encoder. What stays here is
 the part that is about PDFs — which model, which prompt, rasterizing pages,
 stitching per-page answers together; what left is the transport.
@@ -149,11 +149,11 @@ stitching per-page answers together; what left is the transport.
 The split between them is one capability: `claude` and `gemini` send the PDF
 whole because their APIs take a document; `ollama` rasterizes pages because
 its API takes only images. That is a fact about the API, not about the model
-— see ai.nvim's [attachments doc](https://github.com/StefanBartl/ai.nvim/blob/main/docs/attachments.md).
+— see ai.nvim's [attachments doc](https://github.com/WKDSteve/ai.nvim/blob/main/docs/attachments.md).
 
 **ai.nvim is optional.** All three backends' `available()` returns false when
 it is not installed, exactly as it does for a missing API key, so
-[lib.nvim](https://github.com/StefanBartl/lib.nvim) remains pdfport's one
+[lib.nvim](https://github.com/WKDSteve/lib.nvim) remains pdfport's one
 real plugin dependency for everyone who uses the other five backends.
 `:checkhealth pdfport` reports which it is.
 

@@ -1,7 +1,7 @@
 # Contributing to pdfport.nvim
 
 Thank you for your interest! Bugs, ideas and questions are welcome in the
-[issue tracker](https://github.com/StefanBartl/pdfport.nvim/issues); pull
+[issue tracker](https://github.com/WKDSteve/pdfport.nvim/issues); pull
 requests very welcome.
 
 ## Getting the repository into a session
@@ -14,7 +14,7 @@ vim.opt.rtp:prepend("/path/to/pdfport.nvim")
 require("pdfport").setup({})
 ```
 
-[lib.nvim](https://github.com/StefanBartl/lib.nvim) has to be on the runtime
+[lib.nvim](https://github.com/WKDSteve/lib.nvim) has to be on the runtime
 path too — `:PdfPort` is built on its user-command composer. Beyond that you
 need at least one extraction backend on `PATH`; `pdftotext` from poppler is the
 cheapest one to install and the one most specs assume.

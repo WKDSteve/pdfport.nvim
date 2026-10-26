@@ -80,7 +80,7 @@ asynchronous, nothing was on screen while it ran — indistinguishable from a
 command that silently did nothing.
 
 `progress_style` picks how that is reported, via
-[`lib.nvim.progress`](https://github.com/StefanBartl/lib.nvim/blob/main/lua/lib/nvim/progress/README.md):
+[`lib.nvim.progress`](https://github.com/WKDSteve/lib.nvim/blob/main/lua/lib/nvim/progress/README.md):
 `"auto"` (default; prefers fidget.nvim, else `vim.notify`), `"notify"`,
 `"statusline"`, `"fidget"`, `"float"`, `"kit"`.
 

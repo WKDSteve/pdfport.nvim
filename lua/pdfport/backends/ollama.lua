@@ -8,7 +8,7 @@
 ---   * text    -- run `pdftotext` on the page and send its output as prompt
 ---                text, for a model that cannot see.
 --- Either way the HTTP call goes through
---- [ai.nvim](https://github.com/StefanBartl/ai.nvim)'s `ask()`, which owns
+--- [ai.nvim](https://github.com/WKDSteve/ai.nvim)'s `ask()`, which owns
 --- the request shape, the JSON encoding and the base64.
 ---
 --- This file used to carry its own curl path and, below it, a hand-rolled

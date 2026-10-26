@@ -2,7 +2,7 @@
 ---@brief Extraction backend using Google's Gemini API.
 ---@description
 --- Sends the PDF whole, as a base64 document attachment, through
---- [ai.nvim](https://github.com/StefanBartl/ai.nvim)'s provider-agnostic
+--- [ai.nvim](https://github.com/WKDSteve/ai.nvim)'s provider-agnostic
 --- `ask()` — the model reads the PDF itself, so nothing is rasterized here.
 ---
 --- The sibling of `backends/claude.lua`, and deliberately its near-copy:

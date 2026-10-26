@@ -48,7 +48,7 @@ require("pdfport.integrations.oil").setup({
 ```
 
 The keys are declared as named actions through
-[`lib.nvim.bindings.keymap`](https://github.com/StefanBartl/lib.nvim), so a
+[`lib.nvim.bindings.keymap`](https://github.com/WKDSteve/lib.nvim), so a
 misspelled action name is reported instead of silently binding nothing.
 neo-tree is the exception: it installs mappings itself from a table of lhs to
 command name, so a list override there uses the first key.
@@ -56,7 +56,7 @@ command name, so a list override there uses the first key.
 ## User commands
 
 One command, `:PdfPort [subcommand] [path]` (built via
-[`lib.nvim.bindings.usercmd.composer`](https://github.com/StefanBartl/lib.nvim), with
+[`lib.nvim.bindings.usercmd.composer`](https://github.com/WKDSteve/lib.nvim), with
 `<Tab>` completion), defined in
 [lua/pdfport/bindings/usrcmds.lua](../lua/pdfport/bindings/usrcmds.lua).
 All path-taking subcommands accept an optional `[path]` argument; if omitted

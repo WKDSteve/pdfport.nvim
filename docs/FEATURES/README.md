@@ -16,7 +16,7 @@ this PDF?" — and drives whichever tool can answer it.
 
 Backends like `marker`, `docling`, `ollama`, `claude` and `gemini` extract to Markdown
 rather than plain text, which is what makes
-[mdview.nvim](https://github.com/StefanBartl/mdview.nvim) a good place to send
+[mdview.nvim](https://github.com/WKDSteve/mdview.nvim) a good place to send
 the output.
 
 pdfport.nvim moves content in two directions — PDF → text/Markdown

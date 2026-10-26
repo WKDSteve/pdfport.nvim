@@ -17,10 +17,10 @@
 [![Neovim](https://img.shields.io/badge/Neovim-0.9%2B-57A143?logo=neovim&logoColor=white)](https://neovim.io)
 [![Lua](https://img.shields.io/badge/Lua-5.1%2FLuaJIT-2C2D72?logo=lua&logoColor=white)](https://www.lua.org)
 ![Status](https://img.shields.io/badge/status-beta-orange)
-[![CI](https://github.com/StefanBartl/pdfport.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/StefanBartl/pdfport.nvim/actions/workflows/ci.yml)
-[![wkd](https://img.shields.io/badge/wkd-family-c6ff3d)](https://stefanbartl.github.io/wkd/p/pdfport/)
+[![CI](https://github.com/WKDSteve/pdfport.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/WKDSteve/pdfport.nvim/actions/workflows/ci.yml)
+[![wkd](https://img.shields.io/badge/wkd-family-c6ff3d)](https://wkdsteve.github.io/wkd/p/pdfport/)
 
-> Part of the [wkd](https://stefanbartl.github.io/wkd/) family — see this plugin's [page](https://stefanbartl.github.io/wkd/p/pdfport/) on the site.
+> Part of the [wkd](https://wkdsteve.github.io/wkd/) family — see this plugin's [page](https://wkdsteve.github.io/wkd/p/pdfport/) on the site.
 
 PDFs in Neovim, in both directions: reading them and writing them. Reading
 means extracting and displaying a PDF's content through a pluggable backend;
@@ -32,33 +32,33 @@ a clear message rather than an error when a tool is not there.
 
 ## Around it
 
-> **[filetree.nvim](https://github.com/StefanBartl/filetree.nvim)** — the file
+> **[filetree.nvim](https://github.com/WKDSteve/filetree.nvim)** — the file
 > tree from the same collection. It does not need an adapter here: it calls
 > `pdfport.pick_open()` directly, which is why hitting a PDF in it asks exactly
 > the question `:PdfPort` asks.
 >
-> **[hover.nvim](https://github.com/StefanBartl/hover.nvim)** — previews a PDF
+> **[hover.nvim](https://github.com/WKDSteve/hover.nvim)** — previews a PDF
 > page, and a `.docx`, in a float. Both go through `render_page()`; the `.docx`
 > path converts first, then rasterizes page one.
 >
-> **[images.nvim](https://github.com/StefanBartl/images.nvim)** — draws that
+> **[images.nvim](https://github.com/WKDSteve/images.nvim)** — draws that
 > same rasterized page in a picker's preview window.
 >
-> **[markdown.nvim](https://github.com/StefanBartl/markdown.nvim)** — sends
+> **[markdown.nvim](https://github.com/WKDSteve/markdown.nvim)** — sends
 > `:Markdown export pdf` here, and follows a `.pdf` link into a buffer instead
 > of the system reader.
 >
-> **[mdview.nvim](https://github.com/StefanBartl/mdview.nvim)** — previews the
+> **[mdview.nvim](https://github.com/WKDSteve/mdview.nvim)** — previews the
 > Markdown the AI and layout backends extract.
 >
-> **[ai.nvim](https://github.com/StefanBartl/ai.nvim)** — carries the HTTP
+> **[ai.nvim](https://github.com/WKDSteve/ai.nvim)** — carries the HTTP
 > requests for the `claude`, `gemini` and `ollama` extraction backends, so
 > none of them has to hand-roll its own curl/provider path. Without it those
 > three report themselves unavailable; the other five extraction backends are
 > untouched.
 >
 > All of the above are soft: without them everything else works unchanged.
-> [lib.nvim](https://github.com/StefanBartl/lib.nvim) is the one real plugin
+> [lib.nvim](https://github.com/WKDSteve/lib.nvim) is the one real plugin
 > dependency — see [Requirements](docs/requirements.md).
 
 ---
@@ -88,7 +88,7 @@ question each page answers.
 - [Workflow](docs/WORKFLOW.md) — how the pieces combine once several backends and producers are available at once, and the gotchas worth knowing before they cost a debugging session.
 - [Health check](docs/health.md) — the ten `:checkhealth pdfport` sections, and which findings are actually problems.
 - [Contributing](docs/CONTRIBUTING.md) — ground rules, project layout, and how to add a backend or a producer.
-- [Feedback](https://github.com/StefanBartl/pdfport.nvim/issues) — bugs, feature requests and usage questions; broader discussion in [Discussions](https://github.com/StefanBartl/pdfport.nvim/discussions).
+- [Feedback](https://github.com/WKDSteve/pdfport.nvim/issues) — bugs, feature requests and usage questions; broader discussion in [Discussions](https://github.com/WKDSteve/pdfport.nvim/discussions).
 
 `:help pdfport` is the same reference inside the editor.
 

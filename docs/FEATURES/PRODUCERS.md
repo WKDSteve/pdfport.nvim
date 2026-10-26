@@ -77,7 +77,7 @@ scratch directory.
 - **Requires:** LibreOffice (`soffice` on PATH)
 
 **Also used from outside this plugin.**
-[hover.nvim](https://github.com/StefanBartl/hover.nvim) calls
+[hover.nvim](https://github.com/WKDSteve/hover.nvim) calls
 `can_create("office")` and then `create()` to preview an office document:
 there is no way to show a `.docx` in a float, but there is a way to show a
 PDF, so it converts one into the other and rasterizes page 1 through

@@ -7,7 +7,7 @@ should always be loaded lazily — via `cmd = {...}` (recommended) rather than `
 or `event = "VeryLazy"`.
 
 The examples below list `lib.nvim` alone, which is all pdfport needs. Add
-`"StefanBartl/ai.nvim"` to `dependencies` as well if you want the `claude`,
+`"WKDSteve/ai.nvim"` to `dependencies` as well if you want the `claude`,
 `gemini` or `ollama` extraction backends — they route their HTTP requests
 through it and report themselves unavailable without it.
 
@@ -15,8 +15,8 @@ through it and report themselves unavailable without it.
 
 ```lua
 {
-  "StefanBartl/pdfport.nvim",
-  dependencies = { "StefanBartl/lib.nvim" },
+  "WKDSteve/pdfport.nvim",
+  dependencies = { "WKDSteve/lib.nvim" },
   cmd = { "PdfPort" },
   opts = {
     default_backend = "auto",
@@ -29,8 +29,8 @@ through it and report themselves unavailable without it.
 
 ```lua
 use({
-  "StefanBartl/pdfport.nvim",
-  dependencies = { "StefanBartl/lib.nvim" },
+  "WKDSteve/pdfport.nvim",
+  dependencies = { "WKDSteve/lib.nvim" },
   cmd = { "PdfPort" },
   config = function()
     require("pdfport").setup({
@@ -43,7 +43,7 @@ use({
 ## vim-plug
 
 ```vim
-Plug 'StefanBartl/pdfport.nvim'
+Plug 'WKDSteve/pdfport.nvim'
 ```
 
 ```lua
@@ -58,6 +58,6 @@ vim-plug has no built-in lazy-loading by command; wrap the commands yourself or 
 
 ```lua
 local add = MiniDeps.add
-add({ source = "StefanBartl/pdfport.nvim" })
+add({ source = "WKDSteve/pdfport.nvim" })
 require("pdfport").setup({ default_backend = "auto" })
 ```

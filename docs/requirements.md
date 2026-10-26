@@ -5,7 +5,7 @@
 | | |
 | --- | --- |
 | Neovim | **0.9+** |
-| [lib.nvim](https://github.com/StefanBartl/lib.nvim) | `:PdfPort` is built on its user-command composer |
+| [lib.nvim](https://github.com/WKDSteve/lib.nvim) | `:PdfPort` is built on its user-command composer |
 | At least one extraction backend | required to read anything — `pdftotext` from poppler is the usual first choice |
 
 ## Optional
@@ -14,8 +14,8 @@ Detected at runtime, and each costs exactly the one feature it powers:
 
 | | |
 | --- | --- |
-| [ui.nvim](https://github.com/StefanBartl/ui.nvim) | `ui.kit` gives the mode picker and the page-range prompt their themed look; falls back to `vim.ui.select`/`vim.ui.input` when absent |
-| [ai.nvim](https://github.com/StefanBartl/ai.nvim) | The HTTP path for the `claude`, `gemini` and `ollama` extraction backends. Without it those three report themselves unavailable; the other five extraction backends, every producer and every renderer are untouched |
+| [ui.nvim](https://github.com/WKDSteve/ui.nvim) | `ui.kit` gives the mode picker and the page-range prompt their themed look; falls back to `vim.ui.select`/`vim.ui.input` when absent |
+| [ai.nvim](https://github.com/WKDSteve/ai.nvim) | The HTTP path for the `claude`, `gemini` and `ollama` extraction backends. Without it those three report themselves unavailable; the other five extraction backends, every producer and every renderer are untouched |
 | `pdftotext` (poppler), `pdfplumber`, `marker`, `docling`, `tesseract` | Extraction backends, from fastest to most thorough |
 | Ollama, the Claude API, the Gemini API | Extraction to Markdown through a model |
 | `img2pdf`, `magick`, `pandoc`, `weasyprint`, chromium, `soffice` | Creation producers, one per input kind |
@@ -25,7 +25,7 @@ Detected at runtime, and each costs exactly the one feature it powers:
 
 All of them are declared in [install.json](install.json) with why each
 matters, and read by lib.nvim's
-[deps module](https://github.com/StefanBartl/lib.nvim/blob/main/lua/lib/nvim/deps/README.md).
+[deps module](https://github.com/WKDSteve/lib.nvim/blob/main/lua/lib/nvim/deps/README.md).
 `:Lib deps show pdfport.nvim` reports what is missing;
 `:Lib deps install pdfport.nvim` composes and confirms an install command. A
 popup shows this once, the first time `setup()` runs after installing — turn it

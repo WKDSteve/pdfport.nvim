@@ -402,7 +402,7 @@ local function check_integrations()
   if composer_ok then
     h_ok("lib.nvim found – :PdfPort available")
   else
-    h_err("lib.nvim not found – :PdfPort will fail to load", { 'Install "StefanBartl/lib.nvim"' })
+    h_err("lib.nvim not found – :PdfPort will fail to load", { 'Install "WKDSteve/lib.nvim"' })
   end
 
   local kit_ok, _ = pcall(require, "ui.kit")

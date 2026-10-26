@@ -2,7 +2,7 @@
 ---@brief Extraction backend using the Anthropic Claude API.
 ---@description
 --- Sends the PDF as a base64-encoded document attachment through
---- [ai.nvim](https://github.com/StefanBartl/ai.nvim)'s provider-agnostic
+--- [ai.nvim](https://github.com/WKDSteve/ai.nvim)'s provider-agnostic
 --- `ask()`, which owns the HTTP call, the JSON encoding and keeping the API
 --- key out of curl's argv.
 ---

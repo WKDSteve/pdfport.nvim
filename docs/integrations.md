@@ -4,7 +4,7 @@
 
 ### filetree.nvim — no adapter needed
 
-[filetree.nvim](https://github.com/StefanBartl/filetree.nvim) is not in the
+[filetree.nvim](https://github.com/WKDSteve/filetree.nvim) is not in the
 list below and does not need to be: it calls
 [`pdfport.pick_open()`](../lua/pdfport/init.lua) itself. Hitting a PDF in it
 asks exactly the question `:PdfPort` asks, with the same choices and the same

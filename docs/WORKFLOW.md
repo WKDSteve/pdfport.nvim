@@ -127,7 +127,7 @@ backend that isn't yet deterministic (see next section).
 ## Developing/debugging a new backend or producer with `TESTS/`
 
 `TESTS/` is a framework-free headless suite (no plenary, no busted) —
-[testing.nvim](https://github.com/StefanBartl/testing.nvim) runs each `*_spec.lua`
+[testing.nvim](https://github.com/WKDSteve/testing.nvim) runs each `*_spec.lua`
 on `harness.lua` (see `.testing.lua`) and exits non-zero on failure:
 
 ```bash

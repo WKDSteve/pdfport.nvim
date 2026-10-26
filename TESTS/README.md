@@ -1,7 +1,7 @@
 # pdfport.nvim — test suite
 
 Framework-free headless specs. No plenary, no busted: the specs run on the
-shared `harness.lua` (dialect `h` of [testing.nvim](https://github.com/StefanBartl/testing.nvim),
+shared `harness.lua` (dialect `h` of [testing.nvim](https://github.com/WKDSteve/testing.nvim),
 configured in `.testing.lua`) — the same shape used across the sibling plugins.
 
 ## Running

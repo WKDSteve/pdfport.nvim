@@ -29,7 +29,7 @@ to AI-powered cloud and local backends.
 2. REQUIREMENTS                                  *pdfport-requirements*
 
 - Neovim >= 0.9
-- lib.nvim (github.com/StefanBartl/lib.nvim) -- required: the :PdfPort
+- lib.nvim (github.com/WKDSteve/lib.nvim) -- required: the :PdfPort
   command is built on lib.nvim.bindings.usercmd.composer
 - At least one extraction backend installed (see |pdfport-backends|)
 
@@ -38,8 +38,8 @@ to AI-powered cloud and local backends.
 
 With lazy.nvim: >lua
   {
-    "StefanBartl/pdfport.nvim",
-    dependencies = { "StefanBartl/lib.nvim" },
+    "WKDSteve/pdfport.nvim",
+    dependencies = { "WKDSteve/lib.nvim" },
     cmd  = { "PdfPort" },
     opts = { default_backend = "auto" },
   }
