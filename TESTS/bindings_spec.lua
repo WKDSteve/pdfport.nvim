@@ -303,8 +303,8 @@ return function(H)
     -- Every key=value pair and positional argument has a line in lib.nvim's
     -- option float; the text is the `desc` of the KvSpec/ArgSpec in
     -- bindings/usrcmds.lua, or the `desc` of the PDF_PATH type (written once).
-    -- A lib.nvim older than `help.undocumented` cannot answer the question,
-    -- which is a missing feature of the dependency rather than a defect here.
+    -- A lib.nvim older than `help.undocumented` cannot answer the question:
+    -- the case fails by name instead of being skipped (NEW-43).
     do
       local composer = require("lib.nvim.bindings.usercmd.composer")
       if type(composer.help.undocumented) == "function" then
@@ -363,6 +363,11 @@ return function(H)
             "the create route text does not claim it only converts an image"
           )
         end)
+      else
+        H.ok(
+          false,
+          ":PdfPort option float: lib.nvim lacks composer.help.undocumented, update lib.nvim"
+        )
       end
     end
 
