@@ -174,6 +174,34 @@ return function(H)
         "neither an error nor an empty result is stored"
       )
 
+      -- A "partial" result (a page selection claude/gemini/marker/docling
+      -- could not apply) is kept, but a hit has to say what a fresh run
+      -- would: not caching it made every repeat a new paid API call, and
+      -- caching it as "ok" would drop the notice.
+      cache.set(pdf, "claude", "2,3", {
+        status = "partial",
+        text = "whole document",
+        format = "markdown",
+        backend = "claude",
+        error = "claude: page selection (pages=/max_pages=) is not supported",
+      })
+      local partial = cache.get(pdf, "claude", "2,3")
+      H.ok(partial, "a partial result is cached")
+      H.eq(partial and partial.status, "partial", "and comes back partial")
+      H.eq(partial and partial.text, "whole document", "with its text")
+      H.match(partial and partial.error or "", "page selection", "and its message")
+
+      local partial_key
+      for key, entry in pairs(store.pdfport_extract) do
+        if entry.text == "whole document" then partial_key = key end
+      end
+      if partial_key then store.pdfport_extract[partial_key].status = "error" end
+      H.eq(
+        cache.get(pdf, "claude", "2,3"),
+        nil,
+        "a persisted status other than ok/partial is a miss"
+      )
+
       -- A file that is not there has no mtime to key on, so both directions
       -- have to miss rather than guess.
       local gone = pdf .. "-gone"

@@ -78,7 +78,7 @@ pipeline backing `pdfport.open()`/`pdfport.extract()`:
 4. Check the on-disk cache (path + backend id + page-range variant) unless `extract_opts.cache == false`; a hit returns immediately.
 5. Start a progress indicator (`lib.nvim.progress`, only if installed) — wraps `callback` once so every exit path (async `__callback`, synchronous return, backend-threw) reports finish/fail exactly once.
 6. Call the backend's `extract(path, extract_opts)`, `pcall`'d so a throwing backend becomes a normal error result instead of crashing the caller.
-7. On success, write the result to cache before invoking the caller's callback.
+7. On success (`"ok"` or `"partial"`), write the result to cache before invoking the caller's callback.
 
 `M.open(opts, on_error)` layers rendering on top of `dispatch`: on a
 successful extraction it looks up the renderer for `opts.mode` (default
@@ -109,7 +109,11 @@ Successful extractions are cached across Neovim restarts
 and invalidated by the source file's mtime. The dispatcher canonicalizes the
 path before it keys anything (`util/path.lua`), so the several spellings one
 file can arrive under — relative, absolute, or resolved through a symlink the
-way a buffer name is — are one cache entry rather than one each. Opt out per-call or globally
+way a buffer name is — are one cache entry rather than one each. A
+`status = "partial"` result is cached as well, together with its status and
+`error` message, so a hit reports the same unhonoured page selection a fresh
+run would (and a repeated `pages=` request to `claude`/`gemini` is not a new
+paid call every time); errors are never cached. Opt out per-call or globally
 with `extract_opts.cache = false`. Creation (`pdfport.create()`) has no
 cache — an export is a one-off, explicit action with a target path, not a
 repeated read.

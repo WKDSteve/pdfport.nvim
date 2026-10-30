@@ -72,7 +72,8 @@ known vision-model name pattern (`llava`/`bakllava`/`moondream`/`vision`).
 
 Without `pages` / `max_pages` only **page 1** is processed (one slow model
 request per page is not a safe "all"). When `pdfinfo` reports more pages, the
-result is `status = "partial"` with a message saying so, and it is not cached.
+result is `status = "partial"` with a message saying so; a cache hit for it
+comes back partial with the same message.
 `tesseract` behaves the same way.
 
 The HTTP call goes through [ai.nvim](https://github.com/WKDSteve/ai.nvim)'s
@@ -178,8 +179,10 @@ whole — that is the point of them — so `pages` / `max_pages` are not honoure
 you get an answer about the entire PDF, and `pages_processed` stays `nil`
 rather than claiming otherwise. Such a request comes back as
 `status = "partial"` with `error` saying the selection was not applied (the
-same contract as `marker` and `docling`), so `:PdfPort` notifies about it and
-the result is not cached as if it were what was asked for. Use `ollama`,
+same contract as `marker` and `docling`), so `:PdfPort` notifies about it. It
+is still cached under its own page-range key, status and message included, so
+repeating the request is a cache hit that says the same thing rather than
+another paid call for the whole document. Use `ollama`,
 which rasterizes exactly the pages you asked for, when the range matters.
 
 **The extraction cache keys on the prompt and the model, not just the file.**

@@ -45,7 +45,8 @@ what goes unnoticed in a script.
 the backend that reads the PDF is `pdftotext`, `pdfplumber`, `tesseract` or
 `ollama`. `marker` and `docling` cannot select pages: they read the whole
 document and report the result as partial. `claude` and `gemini` do not take
-a page selection either.
+a page selection either: they send the whole PDF and report the result as
+partial too.
 
 See [docs/BINDINGS.md](BINDINGS.md) for the full keymap/command/autocmd cheatsheet.
 

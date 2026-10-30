@@ -305,7 +305,9 @@ function M.dispatch(opts, callback)
 
   extract_opts.__callback = cache_enabled
       and function(result)
-        if result and result.status == "ok" then
+        -- "partial" too: `cache.set` keeps its status and message, so a hit
+        -- reports the same unhonoured selection a fresh run would.
+        if result and (result.status == "ok" or result.status == "partial") then
           require("pdfport.util.cache").set(path, backend_id, variant, result)
         end
         callback(result)
@@ -334,7 +336,7 @@ function M.dispatch(opts, callback)
     end
 
     if result ~= nil then
-      if cache_enabled and result.status == "ok" then
+      if cache_enabled and (result.status == "ok" or result.status == "partial") then
         require("pdfport.util.cache").set(path, backend_id, variant, result)
       end
       callback(result)

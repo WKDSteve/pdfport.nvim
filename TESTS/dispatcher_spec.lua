@@ -230,6 +230,27 @@ return function(H)
       })
       dispatch({ path = pdf })
       H.eq(#writes, 1, "a failed extraction is never cached")
+
+      -- A partial one is: the variant already names the request, and the
+      -- cache keeps the status and message (tmpfile_cache_spec).
+      registry.register_backend({
+        id = "disp_cached",
+        available = function()
+          return true
+        end,
+        extract = function()
+          return {
+            status = "partial",
+            text = "whole",
+            error = "selection not applied",
+            format = "markdown",
+            backend = "disp_cached",
+          }
+        end,
+      })
+      dispatch({ path = pdf, pages = { 2 } })
+      H.eq(#writes, 2, "a partial extraction is cached")
+      H.eq(writes[2] and writes[2].result.status, "partial", "as partial")
     end)
   end
 

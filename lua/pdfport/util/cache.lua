@@ -111,19 +111,23 @@ function M.get(path, backend_id, variant)
     or type(entry.format) ~= "string"
     or type(entry.backend) ~= "string"
     or (entry.pages_processed ~= nil and type(entry.pages_processed) ~= "number")
+    or (entry.status ~= nil and entry.status ~= "ok" and entry.status ~= "partial")
+    or (entry.error ~= nil and type(entry.error) ~= "string")
   then
     store[key] = nil
     disk.save(NAMESPACE, store)
     return nil
   end
 
+  -- Entries written before `status` was persisted have none: they were all "ok".
+  local partial = entry.status == "partial"
   return {
-    status = "ok",
+    status = partial and "partial" or "ok",
     text = entry.text,
     format = entry.format,
     backend = entry.backend,
     pages_processed = entry.pages_processed,
-    error = nil,
+    error = partial and entry.error or nil,
   }
 end
 
@@ -133,7 +137,14 @@ end
 ---@param result PdfPort.Result
 ---@return nil
 function M.set(path, backend_id, variant, result)
-  if not result or result.status ~= "ok" or not result.text then return end
+  -- A "partial" result is kept too, together with its status and message, so a
+  -- hit says exactly what a fresh run would (the variant already names the
+  -- request). Not caching it meant every repeat of a `pages=` request to
+  -- claude/gemini was another paid call for the whole document.
+  if not result or (result.status ~= "ok" and result.status ~= "partial") or not result.text then
+    return
+  end
+  local partial = result.status == "partial"
   local file_mtime = mtime(path)
   if not file_mtime then return end
 
@@ -160,6 +171,8 @@ function M.set(path, backend_id, variant, result)
     format = result.format,
     backend = result.backend,
     pages_processed = result.pages_processed,
+    status = partial and "partial" or nil,
+    error = partial and type(result.error) == "string" and result.error or nil,
     mtime = file_mtime,
     cached_at = os.time(),
   }
