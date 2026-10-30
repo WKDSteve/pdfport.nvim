@@ -118,6 +118,13 @@ function M.extract(path, opts)
     return failure("gemini: " .. (attachment_err or "could not read the PDF"))
   end
 
+  -- The PDF goes to the API whole (one document attachment); there is no
+  -- request field that limits it to some pages, so `pages`/`max_pages` cannot
+  -- reach the model. Marked "partial" below instead of a bare "ok", exactly
+  -- as marker and docling do, so the caller learns the selection was not
+  -- applied rather than silently getting the whole document.
+  local selection_ignored = (opts.pages ~= nil and #opts.pages > 0) or opts.max_pages ~= nil
+
   ai_mod.ask({
     prompt = opts.prompt or DEFAULT_PROMPT,
     provider = "gemini",
@@ -135,13 +142,15 @@ function M.extract(path, opts)
     local result
     if ok then
       result = {
-        status = "ok",
+        status = selection_ignored and "partial" or "ok",
         ---@diagnostic disable-next-line: undefined-field
         text = res_or_err.text,
         format = "markdown",
         backend = "gemini",
         pages_processed = nil,
-        error = nil,
+        error = selection_ignored
+            and "gemini: page selection (pages=/max_pages=) is not supported; the whole document was sent and extracted"
+          or nil,
       }
     else
       ---@diagnostic disable-next-line: undefined-field

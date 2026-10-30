@@ -273,4 +273,45 @@ return function(H)
     H.match(implicit.error, "only page 1 of 3", "that says what was left out")
     H.eq(implicit.pages_processed, 1, "and reports the one page it did")
   end)
+
+  -- ------------------------------------------- 3. page selection is not silently dropped
+
+  -- claude and gemini send the PDF whole; neither request can carry a page
+  -- selection. A pages=/max_pages= request must therefore come back "partial"
+  -- with a message saying so, not as a bare "ok" for a document nobody asked
+  -- for in full.
+  for _, case in ipairs({
+    { id = "claude", key = "claude_api_key" },
+    { id = "gemini", key = "gemini_api_key" },
+  }) do
+    local stub = fake_ai("# Whole document")
+    with_ai(stub, fake_attachments("document", "application/pdf"), function()
+      local backend = require("pdfport.backends." .. case.id)
+      backend._set_config({ [case.key] = "k" })
+
+      for _, selection in ipairs({ { pages = { 2, 3 } }, { max_pages = 1 } }) do
+        local got
+        local opts = vim.tbl_extend("force", selection, {
+          __callback = function(result)
+            got = result
+          end,
+        })
+        backend.extract("/tmp/report.pdf", opts)
+        local what = case.id .. " with " .. vim.inspect(selection, { newline = "", indent = "" })
+        H.eq(got.status, "partial", what .. " is a partial result")
+        H.eq(got.text, "# Whole document", what .. " still carries the text")
+        H.match(got.error, "page selection", what .. " says the selection was not applied")
+      end
+
+      local plain
+      backend.extract("/tmp/report.pdf", {
+        pages = {},
+        __callback = function(result)
+          plain = result
+        end,
+      })
+      H.eq(plain.status, "ok", case.id .. " with an empty pages list stays ok")
+      H.eq(plain.error, nil, case.id .. " and carries no message")
+    end)
+  end
 end

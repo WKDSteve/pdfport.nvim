@@ -176,10 +176,11 @@ and `ai.ask()` does not expose one either.
 **A page range does not reach `claude` or `gemini`.** Both send the document
 whole — that is the point of them — so `pages` / `max_pages` are not honoured:
 you get an answer about the entire PDF, and `pages_processed` stays `nil`
-rather than claiming otherwise. Use `ollama`, which rasterizes exactly the
-pages you asked for, when the range matters. (The extraction cache does key
-on the range, so a `pages = {2,3}` request and a whole-document one are still
-separate entries.)
+rather than claiming otherwise. Such a request comes back as
+`status = "partial"` with `error` saying the selection was not applied (the
+same contract as `marker` and `docling`), so `:PdfPort` notifies about it and
+the result is not cached as if it were what was asked for. Use `ollama`,
+which rasterizes exactly the pages you asked for, when the range matters.
 
 **The extraction cache keys on the prompt and the model, not just the file.**
 It has to: `prompt` and `model` change what these three answer for the very
