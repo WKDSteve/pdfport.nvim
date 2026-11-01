@@ -169,6 +169,26 @@ return function(H)
       H.eq(integrations.current_pdf_path(), nil, "a buffer that is not a file tree resolves to nil")
     end)
 
+    -- The detection is lib.nvim.explorer's: an explorer registered there is understood too.
+    do
+      local shared = require("lib.nvim.explorer")
+      shared.register({
+        name = "pdfport_spec_tree",
+        filetypes = { "pdfport_spec_tree" },
+        current_path = function()
+          return "/docs/from-custom-tree.pdf"
+        end,
+      })
+      as_tree("pdfport_spec_tree", {}, function(integrations)
+        H.eq(
+          integrations.current_pdf_path(),
+          "/docs/from-custom-tree.pdf",
+          "an explorer registered on lib.nvim.explorer resolves a path"
+        )
+      end)
+      shared.unregister("pdfport_spec_tree")
+    end
+
     -- Each tree's plugin missing entirely must miss, not raise: the
     -- integration module is loadable with none of them installed.
     do

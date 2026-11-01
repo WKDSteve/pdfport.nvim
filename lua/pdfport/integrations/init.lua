@@ -1,7 +1,7 @@
 ---@module 'pdfport.integrations'
 ---@brief Unified file-tree integration for pdfport.nvim.
 ---@description
---- Auto-detects the active file-tree by buffer filetype and dispatches accordingly.
+--- Asks `lib.nvim.explorer` which file-tree owns the current buffer and which path is under the cursor.
 --- Each individual integration can also be used directly.
 ---
 --- Supported trees:
@@ -16,56 +16,7 @@ local notify = require("pdfport.util.notify").create("[pdfport.integrations]")
 
 ---@return string|nil pdf_path  nil when the cursor is not on a PDF
 function M.current_pdf_path()
-  local ok_api, api = pcall(vim.api.nvim_get_current_buf)
-  local bufnr = ok_api and api or vim.api.nvim_get_current_buf()
-  local ft = vim.bo[bufnr].filetype
-
-  -- neo-tree
-  if ft == "neo-tree" then
-    local ok_nt, manager = pcall(require, "neo-tree.sources.manager")
-    if ok_nt then
-      local state = manager.get_state_for_window()
-      if state and state.tree then
-        local node = state.tree:get_node()
-        if node then return node:get_id() end
-      end
-    end
-    return nil
-  end
-
-  -- nvim-tree
-  if ft == "NvimTree" then
-    local ok_nvt, tree_api = pcall(require, "nvim-tree.api")
-    if ok_nvt then
-      local node = tree_api.tree.get_node_under_cursor()
-      if node then return node.absolute_path end
-    end
-    return nil
-  end
-
-  -- netrw
-  if ft == "netrw" then
-    local dir = vim.b.netrw_curdir
-    local file = vim.fn.expand("<cfile>")
-    if dir and file and file ~= "" then
-      local sep = (dir:sub(-1) == "/" or dir:sub(-1) == "\\") and "" or "/"
-      return dir .. sep .. file
-    end
-    return nil
-  end
-
-  -- oil.nvim
-  if ft == "oil" then
-    local ok_oil, oil = pcall(require, "oil")
-    if ok_oil then
-      local dir = oil.get_current_dir()
-      local entry = oil.get_cursor_entry()
-      if dir and entry and entry.name then return dir .. entry.name end
-    end
-    return nil
-  end
-
-  return nil
+  return require("lib.nvim.explorer").current_path()
 end
 
 ---@param opts? PdfPort.OpenOpts  optional extra opts (mode, split, backend_id…)
