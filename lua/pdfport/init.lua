@@ -32,6 +32,25 @@ local notify = require("pdfport.util.notify").create("[pdfport]")
 ---@type boolean
 local _initialized = false
 
+local _warmed = false
+
+---@internal
+---Warm the Python-module cache in the background so the resolution of the
+---fallback chain knows whether pdfplumber/docling are installed (their
+---`available()` never blocks on the probe itself). Runs on the first open or
+---extract, not in `setup()`: loading and setting up start no process (SEC-22).
+local function warm_python_cache()
+  if _warmed then return end
+  _warmed = true
+  vim.schedule(function()
+    local ok_p, platform = pcall(require, "pdfport.platform")
+    if ok_p and platform.python() then
+      platform.probe_python_module("pdfplumber")
+      platform.probe_python_module("docling")
+    end
+  end)
+end
+
 -- #############################################################################
 -- Setup
 -- #############################################################################
@@ -66,17 +85,6 @@ function M.setup(user_config)
     local ok_r, rm = pcall(require, r.mod)
     if ok_r then reg.register_renderer(r.id, rm.render) end
   end
-
-  -- Warm the Python-module cache in the background so the first resolution of
-  -- the fallback chain already knows whether pdfplumber/docling are installed
-  -- (their `available()` never blocks on the probe itself).
-  vim.schedule(function()
-    local ok_p, platform = pcall(require, "pdfport.platform")
-    if ok_p and platform.python() then
-      platform.probe_python_module("pdfplumber")
-      platform.probe_python_module("docling")
-    end
-  end)
 
   M._register_commands()
 
@@ -127,6 +135,7 @@ function M.open(opts, on_error, on_done)
     "pdfport.open: opts.path must be a non-empty string"
   )
 
+  warm_python_cache()
   require("pdfport.core.dispatcher").open(opts, on_error or notify.error, on_done)
 end
 
@@ -165,6 +174,7 @@ function M.extract(opts)
   assert(type(opts.path) == "string", "pdfport.extract: opts.path must be a string")
   assert(type(opts.__callback) == "function", "pdfport.extract: opts.__callback must be a function")
 
+  warm_python_cache()
   require("pdfport.core.dispatcher").dispatch(opts, opts.__callback)
 end
 
