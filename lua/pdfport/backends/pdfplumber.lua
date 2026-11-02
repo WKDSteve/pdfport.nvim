@@ -24,7 +24,8 @@ local M = {
 
 ---@return boolean
 function M.available()
-  return platform.python() ~= nil and platform.has_python_module("pdfplumber")
+  -- Never blocks: an unprobed module counts as absent until the background probe answers.
+  return platform.python_module_ready("pdfplumber")
 end
 
 ---@param path string

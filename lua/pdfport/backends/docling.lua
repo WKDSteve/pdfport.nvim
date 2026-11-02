@@ -25,7 +25,8 @@ local M = {
 
 ---@return boolean
 function M.available()
-  return platform.python() ~= nil and platform.has_python_module("docling")
+  -- Never blocks: an unprobed module counts as absent until the background probe answers.
+  return platform.python_module_ready("docling")
 end
 
 ---@param path string

@@ -383,6 +383,60 @@ return function(H)
       H.falsy(platform.has_python_module("docling"), "reset_cache() clears the module cache")
     end)
 
+    -- Python module probes: a fake vim.system stands in for the interpreter.
+    with_platform({ linux = true }, { python3 = true }, function(platform)
+      local real_system = vim.system
+      local spawned, pending_cb, last_opts = 0, nil, nil
+      local outcome = { code = 0 }
+      vim.system = function(argv, opts, cb)
+        spawned = spawned + 1
+        last_opts = opts
+        if cb then
+          pending_cb = function() cb(outcome) end
+          return {}
+        end
+        return { wait = function() return outcome end }
+      end
+      local ok_t, err_t = pcall(function()
+        -- sync probe: bounded by a timeout, cached after the first answer
+        H.ok(platform.has_python_module("pdfplumber"), "exit 0 means the module is there")
+        H.ok(last_opts.timeout and last_opts.timeout > 0, "the sync probe carries a timeout")
+        platform.has_python_module("pdfplumber")
+        H.eq(spawned, 1, "the cache is filled only once")
+
+        -- a timeout (the child is killed, code 124) counts as absent
+        outcome = { code = 124 }
+        H.falsy(platform.has_python_module("docling"), "a timed-out probe is `not available`")
+        H.falsy(platform.python_module_cached("docling"), "and that answer is cached")
+
+        -- async probe: unknown first, available() never spawns synchronously
+        platform.reset_cache()
+        spawned, outcome = 0, { code = 0 }
+        H.eq(platform.python_module_cached("pdfplumber"), nil, "nothing probed yet -> unknown")
+        H.falsy(platform.python_module_ready("pdfplumber"), "unknown counts as absent for the chain")
+        H.falsy(platform.python_module_ready("pdfplumber"), "also on the second ask while pending")
+        H.eq(spawned, 1, "one background process for concurrent asks")
+        H.eq(platform.python_module_cached("pdfplumber"), nil, "still unknown until the callback ran")
+        local seen
+        platform.probe_python_module("pdfplumber", function(ok) seen = ok end)
+        pending_cb()
+        vim.wait(200, function() return seen ~= nil end)
+        H.eq(seen, true, "waiters are told the result")
+        H.ok(platform.python_module_ready("pdfplumber"), "the next resolution sees the module")
+        H.eq(spawned, 1, "and does not spawn again")
+
+        -- reset while a probe is in flight: the late answer must not refill the cache
+        platform.reset_cache()
+        platform.probe_python_module("docling")
+        platform.reset_cache()
+        pending_cb()
+        vim.wait(50)
+        H.eq(platform.python_module_cached("docling"), nil, "a stale probe does not refill the cache")
+      end)
+      vim.system = real_system
+      H.ok(ok_t, tostring(err_t))
+    end)
+
     -- The terminal-image tool: kitty only when the terminal really is kitty
     -- (its `icat` protocol is not something another terminal understands),
     -- then imgcat, then chafa as the universal fallback.

@@ -202,6 +202,15 @@ function H.fake_platform(present, python)
     has_python_module = function(mod)
       return present["pymod:" .. mod] == true
     end,
+    python_module_cached = function(mod)
+      return present["pymod:" .. mod] == true
+    end,
+    python_module_ready = function(mod)
+      return python ~= nil and present["pymod:" .. mod] == true
+    end,
+    probe_python_module = function(mod, on_done)
+      if on_done then on_done(present["pymod:" .. mod] == true) end
+    end,
     open_cmd = function()
       return "xdg-open"
     end,

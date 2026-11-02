@@ -34,7 +34,7 @@ end
 -- name internally (this module's own version re-checked vim.fn.executable
 -- every call for names not yet in _exe_cache). _exe_cache itself stays —
 -- it's still used below for has_python_module's "pymod:<module>" checks,
--- a different kind of probe (shells out to `python -c "import module"`).
+-- a different kind of probe (spawns `python -c "import module"`).
 
 ---@param exe string
 ---@return boolean
@@ -61,20 +61,110 @@ function M.python()
   return _python_cache
 end
 
+-- Upper bound for one `python -c "import X"` probe. A timeout counts as "module
+-- not available" (and is cached as such): a heavy import that needs longer than
+-- this is not something the backend chain should wait for.
+local PROBE_TIMEOUT_MS = 5000
+
+---@type integer  # bumped by reset_cache() so a probe finishing afterwards cannot refill the cache
+local _probe_generation = 0
+---@type table<string, fun(ok: boolean)[]>
+local _probe_waiting = {}
+
+---@param module string
+---@return string[]
+local function probe_argv(module)
+  return { M.python() --[[@as string]], "-c", "import " .. module }
+end
+
+---@param res vim.SystemCompleted|nil
+---@return boolean  # true once the interpreter exited 0
+local function probe_ok(res)
+  return res ~= nil and res.code == 0
+end
+
+--- Synchronous probe, bounded by PROBE_TIMEOUT_MS. For explicit, user-requested
+--- checks (`:checkhealth`) where blocking is acceptable; the backends' hot path
+--- uses `python_module_cached()` / `probe_python_module()` instead.
 ---@param module string
 ---@return boolean
 function M.has_python_module(module)
   local cache_key = "pymod:" .. module
   if _exe_cache[cache_key] ~= nil then return _exe_cache[cache_key] end
-  local python = M.python()
-  if not python then
+  if not M.python() then
     _exe_cache[cache_key] = false
     return false
   end
-  vim.fn.system({ python, "-c", "import " .. module })
-  local result = (vim.v.shell_error == 0)
+  local ok, res = pcall(function()
+    return vim.system(probe_argv(module), { timeout = PROBE_TIMEOUT_MS }):wait()
+  end)
+  local result = ok and probe_ok(res)
   _exe_cache[cache_key] = result
   return result
+end
+
+--- What is already known about a module: true/false once probed, nil while
+--- nothing has been probed yet. Never spawns anything.
+---@param module string
+---@return boolean|nil
+function M.python_module_cached(module)
+  return _exe_cache["pymod:" .. module]
+end
+
+--- Probe a module without blocking the editor. The result is cached (a timeout
+--- or spawn failure counts as "absent"); concurrent calls for the same module
+--- share one interpreter process. `on_done` runs on the main loop.
+---@param module string
+---@param on_done? fun(ok: boolean)
+function M.probe_python_module(module, on_done)
+  local cache_key = "pymod:" .. module
+  local known = _exe_cache[cache_key]
+  if known ~= nil then
+    if on_done then on_done(known) end
+    return
+  end
+  if not M.python() then
+    _exe_cache[cache_key] = false
+    if on_done then on_done(false) end
+    return
+  end
+  if _probe_waiting[module] then
+    if on_done then table.insert(_probe_waiting[module], on_done) end
+    return
+  end
+  local waiting = {}
+  if on_done then waiting[1] = on_done end
+  _probe_waiting[module] = waiting
+  local generation = _probe_generation
+
+  local function finish(result)
+    if generation ~= _probe_generation then return end
+    _exe_cache[cache_key] = result
+    _probe_waiting[module] = nil
+    for _, cb in ipairs(waiting) do cb(result) end
+  end
+
+  local started = pcall(vim.system, probe_argv(module), { timeout = PROBE_TIMEOUT_MS }, function(res)
+    vim.schedule(function()
+      finish(probe_ok(res))
+    end)
+  end)
+  if not started then finish(false) end
+end
+
+--- `available()` for a backend that needs a Python module: the cached answer, or
+--- (while unknown) false plus a background probe, so the first resolution of the
+--- fallback chain skips the backend instead of blocking on the interpreter start.
+---@param module string
+---@return boolean
+function M.python_module_ready(module)
+  if not M.python() then return false end
+  local known = M.python_module_cached(module)
+  if known == nil then
+    M.probe_python_module(module)
+    return false
+  end
+  return known
 end
 
 --- Name of the executable that opens a path/URL with the OS default handler.
@@ -120,6 +210,8 @@ end
 
 function M.reset_cache()
   _exe_cache = {}
+  _probe_generation = _probe_generation + 1
+  _probe_waiting = {}
   _python_cache = nil
   _python_resolved = false
 end
