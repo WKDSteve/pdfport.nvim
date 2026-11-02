@@ -74,7 +74,11 @@ local _probe_waiting = {}
 ---@param module string
 ---@return string[]
 local function probe_argv(module)
-  return { M.python() --[[@as string]], "-c", "import " .. module }
+  return {
+    M.python() --[[@as string]],
+    "-c",
+    "import " .. module,
+  }
 end
 
 ---@param res vim.SystemCompleted|nil
@@ -141,14 +145,21 @@ function M.probe_python_module(module, on_done)
     if generation ~= _probe_generation then return end
     _exe_cache[cache_key] = result
     _probe_waiting[module] = nil
-    for _, cb in ipairs(waiting) do cb(result) end
+    for _, cb in ipairs(waiting) do
+      cb(result)
+    end
   end
 
-  local started = pcall(vim.system, probe_argv(module), { timeout = PROBE_TIMEOUT_MS }, function(res)
-    vim.schedule(function()
-      finish(probe_ok(res))
-    end)
-  end)
+  local started = pcall(
+    vim.system,
+    probe_argv(module),
+    { timeout = PROBE_TIMEOUT_MS },
+    function(res)
+      vim.schedule(function()
+        finish(probe_ok(res))
+      end)
+    end
+  )
   if not started then finish(false) end
 end
 

@@ -392,10 +392,16 @@ return function(H)
         spawned = spawned + 1
         last_opts = opts
         if cb then
-          pending_cb = function() cb(outcome) end
+          pending_cb = function()
+            cb(outcome)
+          end
           return {}
         end
-        return { wait = function() return outcome end }
+        return {
+          wait = function()
+            return outcome
+          end,
+        }
       end
       local ok_t, err_t = pcall(function()
         -- sync probe: bounded by a timeout, cached after the first answer
@@ -413,14 +419,25 @@ return function(H)
         platform.reset_cache()
         spawned, outcome = 0, { code = 0 }
         H.eq(platform.python_module_cached("pdfplumber"), nil, "nothing probed yet -> unknown")
-        H.falsy(platform.python_module_ready("pdfplumber"), "unknown counts as absent for the chain")
+        H.falsy(
+          platform.python_module_ready("pdfplumber"),
+          "unknown counts as absent for the chain"
+        )
         H.falsy(platform.python_module_ready("pdfplumber"), "also on the second ask while pending")
         H.eq(spawned, 1, "one background process for concurrent asks")
-        H.eq(platform.python_module_cached("pdfplumber"), nil, "still unknown until the callback ran")
+        H.eq(
+          platform.python_module_cached("pdfplumber"),
+          nil,
+          "still unknown until the callback ran"
+        )
         local seen
-        platform.probe_python_module("pdfplumber", function(ok) seen = ok end)
+        platform.probe_python_module("pdfplumber", function(ok)
+          seen = ok
+        end)
         pending_cb()
-        vim.wait(200, function() return seen ~= nil end)
+        vim.wait(200, function()
+          return seen ~= nil
+        end)
         H.eq(seen, true, "waiters are told the result")
         H.ok(platform.python_module_ready("pdfplumber"), "the next resolution sees the module")
         H.eq(spawned, 1, "and does not spawn again")
@@ -431,7 +448,11 @@ return function(H)
         platform.reset_cache()
         pending_cb()
         vim.wait(50)
-        H.eq(platform.python_module_cached("docling"), nil, "a stale probe does not refill the cache")
+        H.eq(
+          platform.python_module_cached("docling"),
+          nil,
+          "a stale probe does not refill the cache"
+        )
       end)
       vim.system = real_system
       H.ok(ok_t, tostring(err_t))
