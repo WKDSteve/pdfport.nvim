@@ -13,7 +13,8 @@ return {
   plugin = "pdfport",
   -- How the spec files are run: "auto" = sniffed per file, "h" = on the project's own TESTS/harness.lua,
   -- "script" = a self-running script in its own process.
-  dialect = "h",
+  -- TESTS/sheets_spec.lua is busted style: one case per test sheet (`sheet:<id>`, testing sheets report).
+  dialect = { ["TESTS/sheets_spec.lua"] = "busted", ["*"] = "h" },
   -- Dependencies (directory names) put on the runtimepath: $<NAME>_DIR, .deps/<name>, ../<name>,
   -- stdpath('data')/lazy/<name>.
   deps = { "lib.nvim" },
@@ -40,6 +41,8 @@ return {
       "python3",
       -- ai_backends_spec checks the argv of the pdftotext backend against a missing file.
       "pdftotext",
+      -- sheets_spec.lua: every test sheet (TESTS/sheets/) runs in a child editor.
+      "nvim",
     },
   },
   -- Environment variables the specs read; a child editor inherits an allowlist only (never secrets).

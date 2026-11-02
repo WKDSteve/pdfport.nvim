@@ -204,3 +204,12 @@ red the moment it is fixed and the fix stays a deliberate, separate change.
    Pinned in `integrations_spec.lua`, for both copies: fzf.lua's `preview_fn`
    and, since this round, telescope.lua's `previewer()` (via a faked
    `telescope.previewers`).
+
+## Test sheets (real file trees)
+
+`TESTS/sheets/*.sheet.lua` are the former hand probes, run by `TESTS/sheets_spec.lua` in a child editor
+(testing.nvim `docs/SHEETS.md`): the focus is in a real sidebar (neo-tree, nvim-tree, netrw) or an oil window,
+pdfport renders a result, and the sheet checks where it landed. The real plugins are looked up on the machine
+(`TESTS/support/trees.lua`: `$PDFPORT_PLUGINS_DIR`, `.deps/`, sibling checkouts, the lazy directory of the
+user). A plugin that is not installed makes its sheet a reported skip (`n/a  <reason>` in the output), never
+a green run. netrw is part of Neovim and always runs.
