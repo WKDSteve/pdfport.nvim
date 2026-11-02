@@ -108,6 +108,35 @@ return function(H)
     vim.api.nvim_set_current_win(origin)
     if vim.api.nvim_win_is_valid(other) then vim.api.nvim_win_close(other, true) end
 
+    -- A registered file tree is a sidebar: the PDF must not replace the tree
+    -- buffer but land in the other window. Registered through lib.nvim.explorer,
+    -- so no filetype list in the renderer knows about it.
+    local explorer = require("lib.nvim.explorer")
+    explorer.register({ name = "pdfport-spec-tree", filetypes = { "pdfport_spec_tree" } })
+    local editor_win = vim.api.nvim_get_current_win()
+    vim.cmd("vsplit")
+    local tree_win = vim.api.nvim_get_current_win()
+    local tree_buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_win_set_buf(tree_win, tree_buf)
+    vim.bo[tree_buf].filetype = "pdfport_spec_tree"
+    buffer.render(
+      { status = "ok", text = "x", format = "plain", backend = "b" },
+      { path = "/docs/sidebar.pdf", split = "current" }
+    )
+    H.eq(
+      vim.api.nvim_get_current_win(),
+      editor_win,
+      "a registered tree window is left for an editor window"
+    )
+    H.eq(
+      vim.bo[vim.api.nvim_win_get_buf(tree_win)].filetype,
+      "pdfport_spec_tree",
+      "and the tree buffer keeps its window"
+    )
+    if vim.api.nvim_win_is_valid(tree_win) then vim.api.nvim_win_close(tree_win, true) end
+    explorer.unregister("pdfport-spec-tree")
+    vim.api.nvim_set_current_win(editor_win)
+
     -- An unknown/blank split value is the same as "current", not an error.
     local fallback = render(
       { status = "ok", text = "x", format = "plain", backend = "b" },

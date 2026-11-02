@@ -38,14 +38,25 @@ local function strip_cr(line)
 end
 
 ---@internal
+--- Is `buf` a file-tree sidebar? Asks `lib.nvim.explorer` (the one registry of
+--- trees) instead of listing filetypes here, so a registered tree needs no change
+--- in this plugin. oil is an explorer too, but it edits a directory in an ordinary
+--- window and is not a sidebar to move away from.
+---@param buf integer
+---@return boolean
+local function is_sidebar_buf(buf)
+  local name = require("lib.nvim.explorer").current(buf)
+  return name ~= nil and name ~= "oil"
+end
+
+---@internal
 ---@return integer  orig_win (0 = no switch needed)
 local function ensure_editor_win()
   local cur_win = api.nvim_get_current_win()
   local cur_buf = api.nvim_win_get_buf(cur_win)
-  local cur_ft = vim.bo[cur_buf].filetype
   local cur_cfg = api.nvim_win_get_config(cur_win)
 
-  local is_sidebar = cur_ft == "neo-tree" or cur_ft == "NvimTree" or cur_ft == "netrw"
+  local is_sidebar = is_sidebar_buf(cur_buf)
   local is_float = cur_cfg.relative ~= ""
   if not is_sidebar and not is_float then return 0 end
 
@@ -55,8 +66,7 @@ local function ensure_editor_win()
     if w ~= cur_win and api.nvim_win_is_valid(w) then
       local wbuf = api.nvim_win_get_buf(w)
       local wcfg = api.nvim_win_get_config(w)
-      local wft = vim.bo[wbuf].filetype
-      if wcfg.relative == "" and wft ~= "neo-tree" and wft ~= "NvimTree" and wft ~= "netrw" then
+      if wcfg.relative == "" and not is_sidebar_buf(wbuf) then
         api.nvim_set_current_win(w)
         return cur_win
       end
