@@ -116,26 +116,13 @@ function M.render(result, opts)
 
   local orig_win = ensure_editor_win()
 
-  if split == "tab" then
-    vim.cmd("tabnew")
-    api.nvim_win_set_buf(api.nvim_get_current_win(), bufnr)
-  elseif split == "split" then
-    vim.cmd("split")
-    api.nvim_win_set_buf(api.nvim_get_current_win(), bufnr)
-  elseif split == "vsplit" then
-    vim.cmd("vsplit")
-    api.nvim_win_set_buf(api.nvim_get_current_win(), bufnr)
-  else
-    api.nvim_win_set_buf(api.nvim_get_current_win(), bufnr)
-  end
+  local window = require("pdfport.renderers._window")
+  window.open(
+    (split == "tab" or split == "split" or split == "vsplit") and split or "current",
+    bufnr
+  )
 
-  if not focus then
-    if orig_win ~= 0 and api.nvim_win_is_valid(orig_win) then
-      api.nvim_set_current_win(orig_win)
-    else
-      vim.cmd("wincmd p")
-    end
-  end
+  if not focus then window.restore_focus(orig_win) end
 end
 
 return M

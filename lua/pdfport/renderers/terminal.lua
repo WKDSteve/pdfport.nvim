@@ -73,8 +73,8 @@ local function run_in_terminal(argv, png_path)
   end
 
   local prev_win = vim.api.nvim_get_current_win()
-  vim.cmd("new")
-  local win = vim.api.nvim_get_current_win()
+  local window = require("pdfport.renderers._window")
+  local win = window.open("new")
   local opts = {
     on_exit = function()
       cleanup()
@@ -94,9 +94,7 @@ local function run_in_terminal(argv, png_path)
       "could not start " .. tostring(argv[1]) .. (started and "" or (": " .. tostring(job)))
     )
     cleanup()
-    if win ~= prev_win and vim.api.nvim_win_is_valid(win) then
-      pcall(vim.api.nvim_win_close, win, true)
-    end
+    window.close(win, prev_win)
   end
 end
 

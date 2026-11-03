@@ -68,6 +68,7 @@ local specs = {
   "trace_spec.lua",
   "picker_batch_spec.lua",
   "renderers_spec.lua",
+  "renderers_window_spec.lua",
   "bindings_spec.lua",
   "integrations_spec.lua",
   "public_api_spec.lua",
