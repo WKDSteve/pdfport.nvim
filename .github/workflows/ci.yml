@@ -63,6 +63,51 @@ jobs:
           path: lib.nvim
           ref: ci-verified
 
+      # The real file trees of the test sheets (TESTS/sheets/sidebar-*.sheet.lua): TESTS/support/trees.lua finds
+      # them as siblings. Pinned: third-party code runs inside the sheets on the runner. Bump on purpose.
+      - name: Checkout neo-tree.nvim
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          repository: nvim-neo-tree/neo-tree.nvim
+          path: neo-tree.nvim
+          ref: 1a14083046d96e88e361d1da00761c40d45012f3
+      - name: Checkout nui.nvim
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          repository: MunifTanjim/nui.nvim
+          path: nui.nvim
+          ref: 10fc361835c856ba4233ef5ea135b919bf3dce97
+      - name: Checkout plenary.nvim
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          repository: nvim-lua/plenary.nvim
+          path: plenary.nvim
+          ref: 74b06c6c75e4eeb3108ec01852001636d85a932b
+      - name: Checkout nvim-web-devicons
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          repository: nvim-tree/nvim-web-devicons
+          path: nvim-web-devicons
+          ref: 58447c1fca354bbf184425e4a8d01deecbd6f3c4
+      - name: Checkout nvim-tree.lua (v1.19.0)
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          repository: nvim-tree/nvim-tree.lua
+          path: nvim-tree.lua
+          ref: 9a2e0006d42f292eb3ade7dfdff201a7429a780c
+      - name: Checkout oil.nvim (v2.16.0)
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          repository: stevearc/oil.nvim
+          path: oil.nvim
+          ref: 17c0a8faaf48298a0c0cfb0d757c0eaee4ff7a32
+
       - name: Install Neovim (stable)
         uses: rhysd/action-setup-vim@v1
         with:

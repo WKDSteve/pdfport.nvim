@@ -1,5 +1,9 @@
 doc/tags
 
+# Real plugins for the test sheets (TESTS/support/trees.lua looks here); never committed, CI checks them out
+# as siblings at the commits pinned in .github/workflows/ci.yml.
+.deps/
+
 # Generated module map (docmap.nvim). Derived output, not source:
 # `:DocMap` rebuilds it from the current tree in seconds — open any file in
 # this repo and run it (`:DocMap full` for LuaLS-enriched detail).
