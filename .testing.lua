@@ -133,4 +133,56 @@ return {
       },
     },
   },
+  -- The pipeline is derived (`scripts/test.sh ci list`). The GitHub workflow is generated from `workflow`:
+  -- `testing init --workflow=public --force` writes it (testing.nvim docs/WORKFLOW-CI.md), the step
+  -- workflow-in-sync checks it.
+  ci = {
+    workflow = {
+      name = "pdfport.nvim",
+      layout = "hosted",
+      -- the steps that depend on the platform: the windows and macOS legs run only these
+      platform = { "suite", "conformance" },
+      -- the real file trees of the sidebar test sheets (TESTS/support/trees.lua finds them in .deps)
+      checkouts = {
+        {
+          repo = "nvim-neo-tree/neo-tree.nvim",
+          ref = "1a14083046d96e88e361d1da00761c40d45012f3",
+          why = "A real file tree of the sidebar test sheets (TESTS/sheets/sidebar-*.sheet.lua).",
+        },
+        {
+          repo = "MunifTanjim/nui.nvim",
+          ref = "10fc361835c856ba4233ef5ea135b919bf3dce97",
+          why = "The same sidebar test sheets.",
+        },
+        {
+          repo = "nvim-lua/plenary.nvim",
+          ref = "74b06c6c75e4eeb3108ec01852001636d85a932b",
+          why = "The same sidebar test sheets.",
+        },
+        {
+          repo = "nvim-tree/nvim-web-devicons",
+          ref = "58447c1fca354bbf184425e4a8d01deecbd6f3c4",
+          why = "The same sidebar test sheets.",
+        },
+        {
+          repo = "nvim-tree/nvim-tree.lua",
+          ref = "9a2e0006d42f292eb3ade7dfdff201a7429a780c",
+          why = "The same sidebar test sheets.",
+        },
+        {
+          repo = "stevearc/oil.nvim",
+          ref = "17c0a8faaf48298a0c0cfb0d757c0eaee4ff7a32",
+          why = "The same sidebar test sheets.",
+        },
+      },
+      packages = {
+        { name = "poppler", apt = "poppler-utils", why = "pdftotext, a real dependency of the extraction specs" },
+      },
+      -- `testing ci land`: a check branch ci/** runs the hosted legs, main moves only once it is green there
+      land = true,
+    },
+    steps = {
+      ["workflow-in-sync"] = { preset = "workflow-in-sync" },
+    },
+  },
 }
