@@ -4,6 +4,7 @@
 local T = 'dofile(vim.fn.getcwd() .. "/TESTS/support/trees.lua")'
 return {
   id = "pdfport.sidebar-neo-tree",
+  feature = "pdfport.file-trees",
   title = "pdfport: the result opens in the editor window, not in a neo-tree sidebar",
   task = "pdfport.nvim/handprobe-sidebar-erkennung-mit-echten-file-trees",
   engine = "rpc",

@@ -2,6 +2,7 @@
 -- netrw counts as a sidebar for pdfport.
 return {
   id = "pdfport.sidebar-netrw",
+  feature = "pdfport.file-trees",
   title = "pdfport: the result opens in the editor window, not in a netrw sidebar",
   task = "pdfport.nvim/handprobe-sidebar-erkennung-mit-echten-file-trees",
   engine = "rpc",

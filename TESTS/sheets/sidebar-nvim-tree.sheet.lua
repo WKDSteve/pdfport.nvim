@@ -3,6 +3,7 @@
 local T = 'dofile(vim.fn.getcwd() .. "/TESTS/support/trees.lua")'
 return {
   id = "pdfport.sidebar-nvim-tree",
+  feature = "pdfport.file-trees",
   title = "pdfport: the result opens in the editor window, not in an nvim-tree sidebar",
   task = "pdfport.nvim/handprobe-sidebar-erkennung-mit-echten-file-trees",
   engine = "rpc",

@@ -4,6 +4,7 @@
 local T = 'dofile(vim.fn.getcwd() .. "/TESTS/support/trees.lua")'
 return {
   id = "pdfport.sidebar-oil",
+  feature = "pdfport.file-trees",
   title = "pdfport: an oil window is not a sidebar, the result stays in it",
   task = "pdfport.nvim/handprobe-sidebar-erkennung-mit-echten-file-trees",
   engine = "rpc",
