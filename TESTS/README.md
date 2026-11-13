@@ -1,8 +1,10 @@
 # pdfport.nvim — test suite
 
-Framework-free headless specs. No plenary, no busted: the specs run on the
-shared `harness.lua` (dialect `h` of [testing.nvim](https://github.com/WKDSteve/testing.nvim),
+Headless specs without plenary: the specs run on the shared `harness.lua`
+(dialect `h` of [testing.nvim](https://github.com/WKDSteve/testing.nvim),
 configured in `.testing.lua`) — the same shape used across the sibling plugins.
+The one exception is `sheets_spec.lua`, busted style, which runs the test sheets
+in `sheets/` (one case per sheet).
 
 ## Running
 
@@ -21,12 +23,17 @@ CI runs `scripts/test.sh` on Linux, Windows and macOS.
 
 `run.lua` is no longer the runner. testing.nvim reads it only as the **order
 hint** (the spec list, see "Ordering") and for the sentinel name; do not delete
-it. A new spec still has to be listed there.
+it. Under `isolated = "file"` the order does not matter; list a new `h` spec
+there anyway, so the standalone one-process loop of `run.lua` keeps running it.
 
-`testing.nvim` (the runner) and `lib.nvim` are the only checkouts the suite needs. `ui.nvim`, `ai.nvim`,
-telescope, fzf-lua, neo-tree, nvim-tree and oil are all replaced in
-`package.loaded` wherever they are reached, so the result is the same with or
-without them installed.
+The `h` specs need no checkout besides `testing.nvim` (the runner) and `lib.nvim`.
+`ui.nvim`, `ai.nvim`, telescope, fzf-lua, neo-tree, nvim-tree and oil are all
+replaced in `package.loaded` wherever they are reached, so their result is the
+same with or without them installed. The test sheets of `sheets_spec.lua` drive
+the real file trees instead (neo-tree, nvim-tree, oil; `support/trees.lua`
+looks in `$PDFPORT_PLUGINS_DIR`, `.deps/`, the parent directory and the lazy.nvim
+directory, and the workflow checks them out into `.deps/`): a sheet whose plugin
+is not installed is a reported `n/a`.
 
 ## No external tools required
 

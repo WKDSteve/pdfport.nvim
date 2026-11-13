@@ -1,9 +1,12 @@
 -- TESTS/run.lua — legacy headless runner for pdfport.nvim.
 --
 -- The suite is run by testing.nvim now (`bash scripts/test.sh`, see .testing.lua).
--- testing.nvim reads this file for two things only: the spec ORDER below (it is
--- load-bearing, see the comments on the list) and the sentinel name printed at the end.
--- Keep the list complete. It still works standalone from the repo root:
+-- testing.nvim never executes this file; it reads two things from it: the spec list
+-- below as an order hint and the sentinel name printed at the end. With
+-- `isolated = "file"` every spec file runs in its own nvim, so the order does not
+-- matter there (TESTS/README.md, "Ordering"); it only matters for the standalone
+-- one-process loop below, which runs the `h`-dialect specs listed here (not the
+-- busted-style sheets_spec.lua), from the repo root:
 --   nvim -n -i NONE --headless -u NONE -c "set rtp+=." -c "set rtp+=../lib.nvim" --        -c "luafile TESTS/run.lua" -c "qa!"
 
 local dir = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])") or "./"
@@ -60,6 +63,7 @@ local specs = {
   -- loads producer/backend/renderer modules with their spawn seam replaced,
   -- which the lazy-proxy assertions in registry_spec/producer_spec above
   -- must not see. They also rely on setup() having run once already.
+  "setup_no_process_spec.lua",
   "producer_argv_spec.lua",
   "backend_argv_spec.lua",
   "config_util_spec.lua",

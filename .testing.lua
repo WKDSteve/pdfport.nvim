@@ -2,12 +2,6 @@
 -- Written by `testing migrate`; edit freely (it is never overwritten). Every key is optional; the
 -- keys are documented in testing.nvim's docs/CONFIG.md. Loading this file executes it (same trust
 -- as running the specs).
--- lib.nvim opens a one-time "missing tools" welcome float (deps.first_run) from setup() on a machine
--- without its seen-marker, i.e. on every fresh CI runner. It runs from a scheduled callback and would
--- take over the current window during a later spec (picker_batch_spec: "Invalid buffer id"). The
--- specs do not test it, so it is switched off for the run.
-vim.g.lib_nvim_deps_disable_first_run = true
-
 return {
   -- Lua module root of the project.
   plugin = "pdfport",
@@ -176,7 +170,11 @@ return {
         },
       },
       packages = {
-        { name = "poppler", apt = "poppler-utils", why = "pdftotext, a real dependency of the extraction specs" },
+        {
+          name = "poppler",
+          apt = "poppler-utils",
+          why = "pdftotext, a real dependency of the extraction specs",
+        },
       },
       -- `testing ci land`: a check branch ci/** runs the hosted legs, main moves only once it is green there
       land = true,
