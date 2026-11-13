@@ -101,3 +101,28 @@ question each page answers.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 pdfport.nvim is released under the [MIT License](https://opensource.org/licenses/MIT).
+
+<!-- connections:begin (written by the app-icons tool of the workshop; change integrations.json there, not this block) -->
+## Connections
+
+![pdfport.nvim: what it uses and what uses it](assets/graphs/pdfport.nvim.png)
+
+**Uses**
+
+- [ai.nvim](https://github.com/WKDSteve/ai.nvim): The Claude and Gemini backends of pdfport.nvim send the PDF through the attachments of ai.nvim (`ai.attachments`). ([picture](assets/graphs/pair/pdfport.nvim--ai.nvim.png))
+- [ui.nvim](https://github.com/WKDSteve/ui.nvim): The mode picker of pdfport.nvim uses the kit of ui.nvim; without it `vim.ui.select` is used. ([picture](assets/graphs/pair/pdfport.nvim--ui.nvim.png))
+- [lib.nvim](https://github.com/WKDSteve/lib.nvim): the shared base of the plugins.
+
+**Used by**
+
+- [filetree.nvim](https://github.com/WKDSteve/filetree.nvim): filetree.nvim creates PDF files through pdfport.nvim; without it it says that it cannot (`filetree.util.pdf`). ([picture](assets/graphs/pair/filetree.nvim--pdfport.nvim.png))
+- [github_stats.nvim](https://github.com/WKDSteve/github_stats.nvim): The export of github_stats.nvim can write a PDF through pdfport.nvim when it is installed. ([picture](assets/graphs/pair/github_stats.nvim--pdfport.nvim.png))
+- [gopath.nvim](https://github.com/WKDSteve/gopath.nvim): gopath.nvim opens a PDF through pdfport.nvim when it is installed (`gopath.external.pdf`). ([picture](assets/graphs/pair/gopath.nvim--pdfport.nvim.png))
+- [hover.nvim](https://github.com/WKDSteve/hover.nvim): hover.nvim can show a page of a PDF in its float, rendered by pdfport.nvim (`render_page`). ([picture](assets/graphs/pair/hover.nvim--pdfport.nvim.png))
+- [images.nvim](https://github.com/WKDSteve/images.nvim): images.nvim renders a page of a PDF through pdfport.nvim (`render_page`). ([picture](assets/graphs/pair/images.nvim--pdfport.nvim.png))
+- [insights.nvim](https://github.com/WKDSteve/insights.nvim): insights.nvim can write its metrics as a PDF (`metrics.output_file` ending in .pdf) through pdfport.nvim. ([picture](assets/graphs/pair/insights.nvim--pdfport.nvim.png))
+- [markdown.nvim](https://github.com/WKDSteve/markdown.nvim): markdown.nvim opens a PDF that a link points at in a new buffer through pdfport.nvim (`pdfport.open`). ([picture](assets/graphs/pair/markdown.nvim--pdfport.nvim.png))
+- [media.nvim](https://github.com/WKDSteve/media.nvim): media.nvim uses pdfport.nvim as its PDF tool when it is installed. ([picture](assets/graphs/pair/media.nvim--pdfport.nvim.png))
+- [pickers.nvim](https://github.com/WKDSteve/pickers.nvim): pickers.nvim installs the `filetype_hook` of pdfport.nvim as the telescope preview of PDF entries, so a PDF shows its text and not binary noise (`pdfport.integrations.telescope`). ([picture](assets/graphs/pair/pickers.nvim--pdfport.nvim.png))
+- [runtime-analysis.nvim](https://github.com/WKDSteve/runtime-analysis.nvim): `:RATelemetry export report.pdf` of runtime-analysis.nvim is written through pdfport.nvim. ([picture](assets/graphs/pair/runtime-analysis.nvim--pdfport.nvim.png))
+<!-- connections:end -->
