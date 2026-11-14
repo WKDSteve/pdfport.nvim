@@ -115,6 +115,7 @@ pdfport.nvim is released under the [MIT License](https://opensource.org/licenses
 
 **Used by**
 
+- [docmap.nvim](https://github.com/WKDSteve/docmap.nvim): With `pdf = true`, docmap.nvim also writes the overview as a PDF through pdfport.nvim. ([picture](assets/graphs/pair/docmap.nvim--pdfport.nvim.png))
 - [filetree.nvim](https://github.com/WKDSteve/filetree.nvim): filetree.nvim creates PDF files through pdfport.nvim; without it it says that it cannot (`filetree.util.pdf`). ([picture](assets/graphs/pair/filetree.nvim--pdfport.nvim.png))
 - [github_stats.nvim](https://github.com/WKDSteve/github_stats.nvim): The export of github_stats.nvim can write a PDF through pdfport.nvim when it is installed. ([picture](assets/graphs/pair/github_stats.nvim--pdfport.nvim.png))
 - [gopath.nvim](https://github.com/WKDSteve/gopath.nvim): gopath.nvim opens a PDF through pdfport.nvim when it is installed (`gopath.external.pdf`). ([picture](assets/graphs/pair/gopath.nvim--pdfport.nvim.png))
