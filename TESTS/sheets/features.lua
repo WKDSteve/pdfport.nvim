@@ -81,5 +81,8 @@ return {
     id = "pdfport.picker-preview",
     title = "Telescope and fzf-lua preview a PDF as its extracted text",
     docs = "docs/FEATURES/INTEGRATIONS.md",
+    -- the previewer calls the same extraction as pdfport.text (its pdftotext start is measured there); the two
+    -- pickers are not provided to the sheets
+    perf = "skip:needs telescope or fzf-lua; the preview starts the same extraction as pdfport.text",
   },
 }

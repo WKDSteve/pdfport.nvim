@@ -213,9 +213,21 @@ red the moment it is fixed and the fix stays a deliberate, separate change.
    and, since this round, telescope.lua's `previewer()` (via a faked
    `telescope.previewers`).
 
+## Feature sheets
+
+Every functionality of the catalog `TESTS/sheets/features.lua` has a feature sheet (`feature = "<id>"`) or says
+why not (`perf`): the user's start (a project with a two-page `doc.pdf`, `TESTS/support/sheet.lua`), the command
+or key, and what they see. testing.nvim's `testing perf` runs them to see which processes pdfport starts.
+poppler (pdftotext, pdftoppm, pdfinfo) runs for real, the CI legs install it; without it those sheets are a
+reported n/a. Every other program (tesseract, the producers, chafa, Python, the system opener) is a recording
+stand-in of `testing.fake_programs` on a PATH cut down to the stand-ins and poppler, so no real converter or
+window can start. On Windows a program pdfport starts through libuv (`spawn_capture`) cannot reach a `.cmd`
+stand-in: the start is made and fails, and the sheet checks pdfport's report of it (`sheet.asked`). ai.nvim is
+a stub that answers with what it was given (no network in a sheet).
+
 ## Test sheets (real file trees)
 
-`TESTS/sheets/*.sheet.lua` are the former hand probes, run by `TESTS/sheets_spec.lua` in a child editor
+`TESTS/sheets/sidebar-*.sheet.lua` are the former hand probes, run by `TESTS/sheets_spec.lua` in a child editor
 (testing.nvim `docs/SHEETS.md`): the focus is in a real sidebar (neo-tree, nvim-tree, netrw) or an oil window,
 pdfport renders a result, and the sheet checks where it landed. The real plugins are looked up on the machine
 (`TESTS/support/trees.lua`: `$PDFPORT_PLUGINS_DIR`, `.deps/` (gitignored), sibling checkouts (CI checks all five out at pinned commits), the lazy directory of the
