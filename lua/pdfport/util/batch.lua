@@ -16,6 +16,15 @@ local M = {}
 function M.open_selected(resolve_path)
   local notify = require("pdfport.util.notify").create("[pdfport.batch]")
 
+  -- Called from a Visual-mode mapping (the netrw/nvim-tree/oil `<leader>pb`)
+  -- the selection is still active, and Neovim sets its marks '< and '> only
+  -- when Visual mode ends: read now, they name the previous selection or
+  -- nothing ("no visual selection"). End it first. A caller that already left
+  -- Visual mode (neo-tree's command) is unaffected.
+  if vim.api.nvim_get_mode().mode:match("^[vV\22]") then
+    vim.cmd("normal! " .. vim.api.nvim_replace_termcodes("<Esc>", true, false, true))
+  end
+
   local win = vim.api.nvim_get_current_win()
   local ok_cur, cur = pcall(vim.api.nvim_win_get_cursor, win)
 
