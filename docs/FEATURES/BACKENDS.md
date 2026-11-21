@@ -136,7 +136,7 @@ extraction path at all — it exists purely as the last-resort fallback for
 PDFs where the text-layer backends return nothing useful.
 
 - **Module:** `lua/pdfport/backends/tesseract.lua` (`M.available`, `M.extract`)
-- **Requires:** `tesseract`, `pdftoppm` on PATH
+- **Requires:** `pdftoppm` on PATH, and `tesseract` (on PATH, or found by [images.nvim](https://github.com/WKDSteve/images.nvim), which then does the recognition itself through `images.ocr`: one tesseract wrapper in the ecosystem; this backend spawns tesseract on its own only without images.nvim)
 
 ## The three AI backends and ai.nvim
 

@@ -462,6 +462,51 @@ return function(H)
     end)
   end
 
+  -- With images.nvim present the OCR is its `images.ocr`, not a second tesseract
+  -- call: the spawn seam sees pdftoppm and nothing else, and a machine whose
+  -- tesseract is off PATH (only images.nvim finds it) still offers the backend.
+  do
+    local rec = H.spawn_recorder()
+    rec.on_call = function(argv)
+      if argv[1] == "pdftoppm" then vim.fn.writefile({ "fake png" }, argv[#argv] .. ".png") end
+    end
+    local read, found = {}, true
+    H.with_modules({
+      [SPAWN] = function(...)
+        return rec.fn(...)
+      end,
+      ["pdfport.platform"] = H.fake_platform({ pdftoppm = true }),
+      ["images.ocr"] = {
+        available = function()
+          return found
+        end,
+        run = function(path, _, on_done)
+          read[#read + 1] = path
+          on_done("images text", nil, nil)
+        end,
+      },
+      ["pdfport.backends.tesseract"] = H.UNLOAD,
+    }, function()
+      local backend = require("pdfport.backends.tesseract")
+      H.ok(backend.available(), "images.ocr finds tesseract, so PATH need not")
+
+      local got = extract(backend, "/docs/scan.pdf", { pages = { 3 } })
+      H.eq(got.status, "ok", "the run succeeds")
+      H.eq(got.text, "images text", "with the text images.ocr read")
+      H.eq(#rec.calls, 1, "only pdftoppm was spawned: no tesseract call of its own")
+      H.eq(rec.calls[1].argv[1], "pdftoppm")
+      H.eq(
+        read[1],
+        rec.calls[1].argv[#rec.calls[1].argv] .. ".png",
+        "images.ocr read the page image"
+      )
+      H.eq(vim.fn.filereadable(read[1]), 0, "which is deleted afterwards")
+
+      found = false
+      H.ok(not backend.available(), "no tesseract anywhere -> not available")
+    end)
+  end
+
   with_backend(
     "pdfport.backends.tesseract",
     { tesseract = true, pdftoppm = true },

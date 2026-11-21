@@ -6,6 +6,9 @@
 --- backends' capabilities.ocr = true (marker/docling/ollama/claude), this
 --- one has no other extraction ability — it exists purely as an OCR
 --- fallback for PDFs where the text-layer backends return nothing useful.
+--- The recognition itself is images.nvim's when it is installed (`images.ocr`: one
+--- tesseract wrapper in the ecosystem, with its binary lookup, language and
+--- upscale settings); only without it does this backend spawn tesseract itself.
 --- Install: apt install tesseract-ocr poppler-utils | brew install tesseract poppler | winget install tesseract poppler
 
 local platform = require("pdfport.platform")
@@ -26,9 +29,21 @@ local M = {
   },
 }
 
+---images.nvim's OCR when it is installed and finds tesseract, else nil. Soft:
+---the plugin may be missing, or too old to have `ocr.run`.
+---@return table|nil
+local function images_ocr()
+  local ok, mod = pcall(require, "images.ocr")
+  if not ok or type(mod) ~= "table" then return nil end
+  if type(mod.available) ~= "function" or type(mod.run) ~= "function" then return nil end
+  local ok_found, found = pcall(mod.available)
+  return ok_found and found == true and mod or nil
+end
+
 ---@return boolean
 function M.available()
-  return platform.has("tesseract") and platform.has("pdftoppm")
+  -- images.nvim also finds a tesseract that is installed but not on PATH.
+  return (images_ocr() ~= nil or platform.has("tesseract")) and platform.has("pdftoppm")
 end
 
 ---@param path string
@@ -131,6 +146,21 @@ function M.extract(path, opts)
         return
       end
 
+      local ocr = images_ocr()
+      if ocr then
+        ocr.run(png, nil, function(text, err)
+          vim.fn.delete(png)
+          if not text then
+            finish_error(string.format("tesseract: OCR failed on page %d: %s", page, err or "?"))
+            return
+          end
+          page_texts[#page_texts + 1] = text
+          process_next()
+        end)
+        return
+      end
+
+      -- The fallback: images.nvim is not there, so this is the one tesseract call.
       spawn_capture(
         { "tesseract", png, "stdout" },
         { timeout_ms = timeout_ms },
