@@ -39,15 +39,21 @@ local _warmed = false
 ---fallback chain knows whether pdfplumber/docling are installed (their
 ---`available()` never blocks on the probe itself). Runs on the first open or
 ---extract, not in `setup()`: loading and setting up start no process (SEC-22).
-local function warm_python_cache()
+---
+---Only the modules the chain of this request can reach are probed: the chain
+---is walked the way the resolver walks it, and a Python backend's
+---`available()` starts its own probe when it is reached. A backend before them
+---that is available (pdftotext, the default first entry) ends the walk, so a
+---user who never gets past it starts no interpreter -- `import docling` alone
+---loads its ML dependencies (seconds of CPU, hundreds of MB).
+---@param requested PdfPort.BackendId|"auto"|nil
+local function warm_python_cache(requested)
   if _warmed then return end
   _warmed = true
   vim.schedule(function()
-    local ok_p, platform = pcall(require, "pdfport.platform")
-    if ok_p and platform.python() then
-      platform.probe_python_module("pdfplumber")
-      platform.probe_python_module("docling")
-    end
+    pcall(function()
+      require("pdfport.core.resolver").resolve(requested)
+    end)
   end)
 end
 
@@ -135,7 +141,7 @@ function M.open(opts, on_error, on_done)
     "pdfport.open: opts.path must be a non-empty string"
   )
 
-  warm_python_cache()
+  warm_python_cache(opts.backend_id)
   require("pdfport.core.dispatcher").open(opts, on_error or notify.error, on_done)
 end
 
@@ -174,7 +180,7 @@ function M.extract(opts)
   assert(type(opts.path) == "string", "pdfport.extract: opts.path must be a string")
   assert(type(opts.__callback) == "function", "pdfport.extract: opts.__callback must be a function")
 
-  warm_python_cache()
+  warm_python_cache(opts.backend_id)
   require("pdfport.core.dispatcher").dispatch(opts, opts.__callback)
 end
 
