@@ -85,7 +85,8 @@ require("telescope.builtin").find_files({
   previewer = pdfport_tel.previewer({ max_pages = 3 }),
 })
 
--- Global hook (all pickers)
+-- Global hook (all pickers). It answers as telescope reads a hook: true = go on with
+-- telescope's own preview (every other file), false = stop (a PDF, drawn by the hook).
 require("telescope").setup({
   defaults = {
     preview = { filetype_hook = pdfport_tel.filetype_hook },

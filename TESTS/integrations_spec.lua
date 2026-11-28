@@ -519,10 +519,21 @@ return function(H)
     }, function()
       local buf = vim.api.nvim_create_buf(false, true)
 
-      H.falsy(telescope.filetype_hook("/docs/a.txt", buf, {}), "a non-PDF is left to the default")
+      -- telescope reads the answer as "go on with your own preview?" (true = yes, false = stop):
+      -- answering false for every non-PDF emptied every preview of a global hook
+      H.eq(
+        telescope.filetype_hook("/docs/a.txt", buf, {}),
+        true,
+        "a non-PDF goes on to telescope's own preview"
+      )
       H.eq(#requests, 0, "and nothing is extracted for it")
+      H.eq(telescope.filetype_hook(nil, buf, {}), true, "no path: telescope's own preview too")
 
-      H.ok(telescope.filetype_hook("/docs/a.pdf", buf, {}), "a PDF is handled by the hook")
+      H.eq(
+        telescope.filetype_hook("/docs/a.pdf", buf, {}),
+        false,
+        "a PDF stops telescope's preview: the hook draws its text itself"
+      )
       H.eq(#requests, 1, "which asks for one extraction")
       H.eq(requests[1].path, "/docs/a.pdf", "of that file")
       -- A preview is a glance, not a read: extracting a 400-page scan to

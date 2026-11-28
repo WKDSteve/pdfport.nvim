@@ -15,6 +15,10 @@
 ---       preview = { filetype_hook = pdfport_tel.filetype_hook },
 ---     },
 ---   })
+---
+--- telescope reads a `filetype_hook`'s answer as "go on with your own preview?": `true` lets it
+--- show the file, `false` stops it. So the hook answers `true` for every file that is not a PDF
+--- and `false` for a PDF, whose text it draws into the preview buffer itself.
 
 local M = {}
 
@@ -72,9 +76,10 @@ end
 ---@param filepath string
 ---@param bufnr integer
 ---@param _ table
----@return boolean  true = hook handled, false = use default
+---@return boolean  telescope's reading: true = go on with telescope's own preview (not a PDF),
+---                 false = stop, the hook draws the PDF's text itself
 function M.filetype_hook(filepath, bufnr, _)
-  if not filepath or not filepath:lower():match("%.pdf$") then return false end
+  if type(filepath) ~= "string" or not filepath:lower():match("%.pdf$") then return true end
 
   local pdfport = require("pdfport")
 
@@ -96,7 +101,7 @@ function M.filetype_hook(filepath, bufnr, _)
     end,
   })
 
-  return true
+  return false
 end
 
 return M

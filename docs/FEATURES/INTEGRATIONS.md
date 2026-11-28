@@ -62,7 +62,7 @@ Not a file-tree — a previewer for Telescope's picker preview pane. Two ways
 to attach:
 
 - `previewer(opts)` — pass into a single picker's `previewer` field to preview `.pdf` results inline (extracted text, not raw bytes).
-- `filetype_hook` — attach once, globally, via `defaults.preview.filetype_hook` in Telescope's own `setup()`, so every picker gets PDF previews without opting in per-call.
+- `filetype_hook` — attach once, globally, via `defaults.preview.filetype_hook` in Telescope's own `setup()`, so every picker gets PDF previews without opting in per-call. It answers the way telescope reads a hook: `true` (go on with telescope's own preview) for every other file, `false` for a PDF, whose text it draws itself. Chaining it behind a hook of your own: call yours first and return `false` as soon as one of them does.
 
 `opts.max_pages` bounds how much of a long PDF gets extracted just for a
 preview pane.
